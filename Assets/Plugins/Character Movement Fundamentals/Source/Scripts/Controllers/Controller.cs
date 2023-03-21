@@ -12,6 +12,7 @@ namespace CMF
 		public abstract Vector3 GetVelocity();
 		public abstract Vector3 GetMovementVelocity();
 		public abstract bool IsGrounded();
+		public virtual bool IsSprinting() => false;
 
 		//Events;
 		public delegate void VectorEvent(Vector3 v);

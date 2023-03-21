@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 namespace Etienne.LoadingScreen
 {
+    enum Scenes    {MainMenu, LoadingScreen, Level    }
     public class MainMenu : MonoBehaviour
     {
         [SerializeField] private Button playButton, quitButton;
@@ -14,15 +15,6 @@ namespace Etienne.LoadingScreen
             quitButton.onClick.AddListener(Quit);
         }
 
-        //private IEnumerator Start()
-        //{
-        //loadingScreenOperation = SceneManager.LoadSceneAsync(1, new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.None));
-        //loadingScreenOperation.allowSceneActivation = false;
-        //Debug.Log("start Loading");
-        //yield return new WaitUntil(() => loadingScreenOperation.isDone);
-        //Debug.Log("Loading completed");
-        //}
-
         private void Play()
         {
             Debug.Log("Play");
@@ -31,22 +23,29 @@ namespace Etienne.LoadingScreen
 
         private IEnumerator UnloadMainMenu()
         {
-            var camera = Camera.main;
-            AsyncOperation operation = SceneManager.LoadSceneAsync(1, new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.None));
+            Canvas canvas = FindObjectOfType<Canvas>();
+            AsyncOperation operation = SceneManager.LoadSceneAsync((int)Scenes.LoadingScreen, new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.None));
             yield return new WaitUntil(() => operation.isDone);
-            camera.gameObject.SetActive(false);
+            canvas.enabled = false;
+            canvas = FindObjectsOfType<Canvas>()[^1];
+            canvas.worldCamera = Camera.main;
 
 
-            operation = SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
+            operation = SceneManager.LoadSceneAsync((int)Scenes.Level, LoadSceneMode.Additive);
             operation.allowSceneActivation = false;
-            yield return new WaitForSecondsRealtime(10f);
+            float time = 5f;
+            yield return new WaitForSecondsRealtime(time);
+            time = FindObjectOfType<MainMenuGhoul>().PlayAnimation();
+            yield return new WaitForSecondsRealtime(time);
+
+            Camera main = Camera.main;
+            main.GetComponent<AudioListener>().enabled = false;
             operation.allowSceneActivation = true;
             yield return new WaitUntil(() => operation.isDone);
-
-            SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(2));
-
-            SceneManager.UnloadSceneAsync(1);
-            SceneManager.UnloadSceneAsync(0);
+            SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex((int)Scenes.Level));
+            main.enabled = false;
+            SceneManager.UnloadSceneAsync((int)Scenes.MainMenu);
+            SceneManager.UnloadSceneAsync((int)Scenes.LoadingScreen);
         }
 
         private void Quit()
