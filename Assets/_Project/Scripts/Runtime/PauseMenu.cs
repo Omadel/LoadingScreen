@@ -50,7 +50,7 @@ namespace Etienne.LoadingScreen
             group.interactable = isPaused;
             group.blocksRaycasts = isPaused;
             tween?.Kill();
-            tween = DOTween.To(() => Time.timeScale, v => Time.timeScale = v, 0f, .4f).SetUpdate(true);
+            tween = DOTween.To(() => Time.timeScale, v => Time.timeScale = v, .01f, .4f).SetUpdate(true);
         }
 
         private void Resume()

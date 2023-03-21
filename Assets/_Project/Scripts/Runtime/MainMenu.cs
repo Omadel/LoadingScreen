@@ -1,11 +1,12 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Etienne.LoadingScreen
 {
-    enum Scenes    {MainMenu, LoadingScreen, Level    }
+    internal enum Scenes { MainMenu, LoadingScreen, Level }
     public class MainMenu : MonoBehaviour
     {
         [SerializeField] private Button playButton, quitButton;
@@ -27,6 +28,7 @@ namespace Etienne.LoadingScreen
             AsyncOperation operation = SceneManager.LoadSceneAsync((int)Scenes.LoadingScreen, new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.None));
             yield return new WaitUntil(() => operation.isDone);
             canvas.enabled = false;
+            EventSystem.current.gameObject.SetActive(false);
             canvas = FindObjectsOfType<Canvas>()[^1];
             canvas.worldCamera = Camera.main;
 

@@ -31,12 +31,16 @@ namespace Etienne.LoadingScreen
         private void Start()
         {
             camera = Camera.main;
-            playerTransform = camera.transform.root;
         }
 
         private void Update()
         {
-            Ray ray = camera.ViewportPointToRay(new Vector3(.5f, .6f));
+            if (camera == null)
+            {
+                camera = Camera.main;
+                playerTransform = camera.transform.root;
+            }
+            Ray ray = Camera.main.ViewportPointToRay(new Vector3(.5f, .6f));
             if (!Physics.Raycast(ray, out RaycastHit hit)) return;
 
             NavMesh.SamplePosition(hit.point, out NavMeshHit navhit, 1000, NavMesh.AllAreas);
@@ -76,13 +80,6 @@ namespace Etienne.LoadingScreen
                 lenght += Vector3.Distance(waypoints[i - 1], waypoints[i]);
             }
             return lenght;
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            if (!agent) return;
-            UnityEditor.Handles.DrawAAPolyLine(agent.path.corners);
-            Gizmos.DrawSphere(agent.destination, .2f);
         }
     }
 }
